@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta http-equiv="refresh" content="10">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>VM Monitor</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(250px, 1fr));
+
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .label {
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .progress {
+            background: #ddd;
+            border-radius: 10px;
+            height: 18px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #3498db;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+
+        .disk-card {
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            color: #777;
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>🖥️ VM Monitor</h1>
+
+    <div class="subtitle">
+        Monitoramento da máquina virtual
+    </div>
+
+
+    <div class="grid">
+
+        <!-- HOSTNAME -->
+
+        <div class="card">
+
+            <h2>Hostname</h2>
+
+            <div class="value">
+                {{ data.hostname }}
+            </div>
+
+            <div class="label">
+                Nome da máquina
+            </div>
+
+        </div>
+
+
+        <!-- IP -->
+
+        <div class="card">
+
+            <h2>🌐 IP</h2>
+
+            <div class="value">
+                {{ data.ip }}
+            </div>
+
+            <div class="label">
+                Endereço IP
+            </div>
+
+        </div>
+
+
+        <!-- CPU -->
+
+        <div class="card">
+
+            <h2>💻 CPU</h2>
+
+            <div class="value">
+                {{ data.cpu.percent }}%
+            </div>
+
+            <div class="label">
+                {{ data.cpu.cores }} cores /
+                {{ data.cpu.threads }} threads
+            </div>
+
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    style="width: {{ data.cpu.percent }}%">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEMORIA -->
+
+        <div class="card">
+
+            <h2>🧠 Memória</h2>
+
+            <div class="value">
+                {{ data.memory.percent }}%
+            </div>
+
+            <div class="label">
+                {{ data.memory.used }} GB usados
+                de {{ data.memory.total }} GB
+            </div>
+
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    style="width: {{ data.memory.percent }}%">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- UPTIME -->
+
+        <div class="card">
+
+            <h2>⏱️ Uptime</h2>
+
+            <div class="value">
+                {{ data.uptime }}
+            </div>
+
+            <div class="label">
+                Tempo desde o último boot
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DISCO -->
+
+    <div class="card disk-card">
+
+        <h2>💾 Disco — df -h</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Filesystem</th>
+                    <th>Mount</th>
+                    <th>Total</th>
+                    <th>Usado</th>
+                    <th>Livre</th>
+                    <th>Uso</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for disk in data.disk %}
+
+                <tr>
+
+                    <td>
+                        {{ disk.device }}
+                    </td>
+
+                    <td>
+                        {{ disk.mountpoint }}
+                    </td>
+
+                    <td>
+                        {{ disk.total }} GB
+                    </td>
+
+                    <td>
+                        {{ disk.used }} GB
+                    </td>
+
+                    <td>
+                        {{ disk.free }} GB
+                    </td>
+
+                    <td>
+                        {{ disk.percent }}%
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="footer">
+
+        Última atualização:
+        {{ data.last_update }}
+
+        <br>
+
+        Atualização automática a cada 10 segundos.
+
+    </div>
+
+</body>
+
+</html>
